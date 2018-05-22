@@ -5,22 +5,30 @@ from builtins import str
 from discord.ext import commands
 
 bot = commands.Bot(command_prefix='$')
+famdic = None
+fusdic = None
 
 @bot.event
 async def on_ready():
+    global famdic
+    global fusdic
+    
     print('Logged in as')
     print(bot.user.name)
     print(bot.user.id)
     print('------')
+    print('Scraping...')
+    famdic = scrape.scrapefam()
+    fusdic = scrape.scrapefus()
     print('Ready')
 
 @bot.command()
 async def fam(ctx, *args):
-    dic = scrape.scrapefam()
+    global famdic
     try:
         s = "".join(args)
         pattern = re.compile('[\W_]+', re.UNICODE)
-        fam = dic[pattern.sub('', s).lower()] # for case and whitespace and symbol-insensitive searching
+        fam = famdic[pattern.sub('', s).lower()] # for case and whitespace and symbol-insensitive searching
         embed = discord.Embed(title=fam['id'], description=fam['rarity'], color=0xeee657)
         embed.set_image(url=fam['image'])
         embed.add_field(name="Power", value=fam['power'])
@@ -30,16 +38,16 @@ async def fam(ctx, *args):
             embed.add_field(name=skill['name'], value=skill['target']+skill['values'])
         await ctx.send(embed=embed)
     except KeyError as error:
-        await ctx.send("Invalid familiar.")
+        await ctx.send("Invalid familiar name.")
         
 
 @bot.command()
 async def fus(ctx, *args):
-    dic = scrape.scrapefus()
+    global fusdic
     try:
         s = "".join(args)
         pattern = re.compile('[\W_]+', re.UNICODE)
-        fus = dic[pattern.sub('', s).lower()] # for case and whitespace and symbol-insensitive searching
+        fus = fusdic[pattern.sub('', s).lower()] # for case and whitespace and symbol-insensitive searching
         embed = discord.Embed(title=fus['id'], description=fus['rarity']+"\n"+fus['recipe'], color=0xeee657)
         embed.set_image(url=fus['image'])
         embed.add_field(name="Power", value=fus['power'])
@@ -49,7 +57,7 @@ async def fus(ctx, *args):
             embed.add_field(name=skill['name'], value=skill['target']+skill['values'])
         await ctx.send(embed=embed)
     except KeyError as error:
-        await ctx.send("Invalid fusion.")
+        await ctx.send("Invalid fusion name.")
 
 @bot.command()
 async def info(ctx):
