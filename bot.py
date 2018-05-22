@@ -50,6 +50,7 @@ async def fus(ctx, *args):
         fus = fusdic[pattern.sub('', s).lower()] # for case and whitespace and symbol-insensitive searching
         embed = discord.Embed(title=fus['id'], description=fus['rarity']+"\n"+fus['recipe'], color=0xeee657)
         embed.set_image(url=fus['image'])
+        embed.add_field(name="Bonus", value=fus['bonus'], inline=False)
         embed.add_field(name="Power", value=fus['power'])
         embed.add_field(name="Stamina", value=fus['stamina'])
         embed.add_field(name="Agility", value=fus['agility'])
@@ -61,13 +62,13 @@ async def fus(ctx, *args):
 
 @bot.command()
 async def info(ctx):
-    embed = discord.Embed(title="nice bot", description="Nicest bot there is ever.", color=0xeee657)
+    embed = discord.Embed(title="BHWikiBot", description="All information from http://bit-heroes.wikia.com/wiki/Bit_Heroes_Wiki", color=0xeee657)
     
     # give info about you here
     embed.add_field(name="Author", value="ranthai")
 
     # give users a link to invite thsi bot to their server
-    embed.add_field(name="Invite", value="[Invite link](<insert your OAuth invitation link here>)")
+    # embed.add_field(name="Invite", value="[Invite link](<insert your OAuth invitation link here>)")
 
     await ctx.send(embed=embed)
 
@@ -75,8 +76,10 @@ bot.remove_command('help')
 
 @bot.command()
 async def help(ctx):
-    embed = discord.Embed(title="nice bot", description="A Very Nice bot. List of commands are:", color=0xeee657)
-    embed.add_field(name="$info", value="Gives a little info about the bot", inline=False)
+    embed = discord.Embed(title="BHWikiBot", description="List of commands are:", color=0xeee657)
+    embed.add_field(name="$fam", value="Gives info about familiar", inline=False)
+    embed.add_field(name="$fus", value="Gives info about fusion", inline=False)
+    embed.add_field(name="$info", value="Gives info about the bot", inline=False)
     embed.add_field(name="$help", value="Gives this message", inline=False)
     
     await ctx.send(embed=embed)
