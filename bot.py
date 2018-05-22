@@ -29,7 +29,7 @@ async def fam(ctx, *args):
         s = "".join(args)
         pattern = re.compile('[\W_]+', re.UNICODE)
         fam = famdic[pattern.sub('', s).lower()] # for case and whitespace and symbol-insensitive searching
-        embed = discord.Embed(title=fam['id'], description=fam['rarity'], color=0xeee657)
+        embed = discord.Embed(title=fam['id'], description=fam['rarity']+"\n"+fam['location'], color=0xeee657)
         embed.set_image(url=fam['image'])
         embed.add_field(name="Power", value=fam['power'])
         embed.add_field(name="Stamina", value=fam['stamina'])

@@ -22,6 +22,7 @@ def scrapefam():
         
     def thirdrow(row, dic):
         data = row.findAll('td')
+        dic['location'] = data[0].text
         dic['agility'] = data[2].find('b').text
         for index, skill in enumerate(data[3:]):
             dic['skills'][index]['values'] = skill.text
