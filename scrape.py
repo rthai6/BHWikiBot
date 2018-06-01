@@ -3,9 +3,9 @@ import csv
 import requests
 from bs4 import BeautifulSoup
 
-def scrapefam():
+def scrapefamiliar():
     def firstrow(row, dic):
-        dic['id'] = row['id'].replace('_', ' ').replace(".27", "'")
+        dic['name'] = row['id'].replace('_', ' ').replace(".27", "'")
         data = row.findAll('td')
         dic['rarity'] = data[0]['class'][0].capitalize()
         dic['image'] = data[0].find('span').find('img')['data-src']
@@ -40,13 +40,13 @@ def scrapefam():
             secondrow(rows[i+1], dic)
             thirdrow(rows[i+2], dic)
             pattern = re.compile('[\W_]+', re.UNICODE)
-            result[pattern.sub('', dic['id']).lower()] = dic # for case and whitespace and symbol-insensitive searching
+            result[pattern.sub('', dic['name']).lower()] = dic # for case and whitespace and symbol-insensitive searching
             i += 3
     return result
 
-def scrapefus():
+def scrapefusion():
     def firstrow(row, dic):
-        dic['id'] = row['id'].replace('_', ' ').replace(".27", "'")
+        dic['name'] = row['id'].replace('_', ' ').replace(".27", "'")
         data = row.findAll('td')
         dic['rarity'] = data[0]['class'][0].capitalize()
         if data[0].find('span'):
@@ -83,9 +83,70 @@ def scrapefus():
             secondrow(rows[i+1], dic)
             thirdrow(rows[i+2], dic)
             pattern = re.compile('[\W_]+', re.UNICODE)
-            result[pattern.sub('', dic['id']).lower()] = dic # for case and whitespace and symbol-insensitive searching
+            result[pattern.sub('', dic['name']).lower()] = dic # for case and whitespace and symbol-insensitive searching
             i += 3
+    return result
+
+def scrapemythic():
+    def firstrow(row, dic):
+        data = row.findAll('td')
+        if data[0].find('span'):
+            dic['image'] = data[0].find('span').find('img')['data-src']
+        dic['name'] = data[1].find('b').text.replace('_', ' ').replace(".27", "'")
+        dic['type'] = data[2].find('b').text
+        dic['tier'] = data[3].find('b').text
+#        pattern = re.compile('[(].+[)]')
+        if data[4].find('b'):
+            dic['power'] = data[4].find('b').text
+        if data[5].find('b'):
+            dic['stamina'] = data[5].find('b').text
+        if data[6].find('b'):
+            dic['agility'] = data[6].find('b').text
+
+    def secondrow(row, dic):
+        data = row.findAll('td')
+        dic['location'] = data[0].text
+        
+    result = {}
+    response = requests.get('https://bit-heroes.wikia.com/wiki/List_of_mythic_equipment')
+    html = response.content
+    soup = BeautifulSoup(html, "html.parser")
+    tables = soup.findAll('table')
+    rows = tables[2].findAll('tr')
+    i = 1 # skip table name
+    # first item is special case...
+    # image from src instead of data-src
+    dic = {}
+    row = rows[i]
+    data = row.findAll('td')
+    if data[0].find('span'):
+        dic['image'] = data[0].find('span').find('img')['src']
+    dic['name'] = data[1].find('b').text.replace('_', ' ').replace(".27", "'")
+    dic['type'] = data[2].find('b').text
+    dic['tier'] = data[3].find('b').text
+    if data[4].find('b'):
+        dic['power'] = data[4].find('b').text
+    if data[5].find('b'):
+        dic['stamina'] = data[5].find('b').text
+    if data[6].find('b'):
+        dic['agility'] = data[6].find('b').text
+    row = rows[i+1]
+    data = row.findAll('td')
+    dic['location'] = data[0].text
+    pattern = re.compile('[\W_]+', re.UNICODE)
+    result[pattern.sub('', dic['name']).lower()] = dic # for case and whitespace and symbol-insensitive searching
+    result['pewpew'] = dic # for case and whitespace and symbol-insensitive searching
+    i += 2
+    while i < len(rows):
+        dic = {}
+        firstrow(rows[i], dic)
+        secondrow(rows[i+1], dic)
+        pattern = re.compile('[\W_]+', re.UNICODE)
+        result[pattern.sub('', dic['name']).lower()] = dic # for case and whitespace and symbol-insensitive searching
+        i += 2
     return result
     
 if __name__ == "__main__":
-    print(scrapefus())
+#    scrapemythic()
+#    print(scrapemythic())
+    pass
