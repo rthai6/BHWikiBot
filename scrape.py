@@ -148,5 +148,5 @@ def scrapemythic():
     
 if __name__ == "__main__":
 #    scrapemythic()
-#    print(scrapemythic())
+    print(scrapemythic())
     pass

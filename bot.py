@@ -74,11 +74,14 @@ async def mythic(ctx, *args):
         embed = discord.Embed(title=mythic['name'], description=mythic['type']+"\n"+mythic['location'], color=0xeee657)
         embed.set_image(url=mythic['image'])
 #        embed.add_field(name="Bonus", value=mythic['bonus'], inline=False)
-        embed.add_field(name="Power", value=mythic['power'])
-        embed.add_field(name="Stamina", value=mythic['stamina'])
-        embed.add_field(name="Agility", value=mythic['agility'])
+        if 'power' in mythic:
+            embed.add_field(name="Power", value=mythic['power'])
+        if 'stamina' in mythic:
+            embed.add_field(name="Stamina", value=mythic['stamina'])
+        if 'agility' in mythic:
+            embed.add_field(name="Agility", value=mythic['agility'])
         await ctx.send(embed=embed)
-    except KeyError as error:
+    except KeyError as error:   
         await ctx.send("Invalid mythic name.")
 
 @bot.command()
