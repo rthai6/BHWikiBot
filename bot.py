@@ -13,6 +13,7 @@ mythicdic = None
 async def on_ready():
     global fdic
     global mdic
+    global colordic
     
     print('Logged in as')
     print(bot.user.name)
@@ -25,19 +26,21 @@ async def on_ready():
     fdic = scrape.scrapefusion(fdic)
     print('Scraping mythics...')
     mdic = scrape.scrapemythic()
+    colordic = {'Common':0x97ff7d, 'Rare':0x939ef4, 'Epic':0xff807d, 'Legendary':0xffff00, 'Set':0x00fffc, 'Mythic':0xff00ae}
     print('Ready')
     
 @bot.command()
 async def f(ctx, *args):
     global fdic
+    global colordic
     try:
         s = "".join(args)
         pattern = re.compile('[\W_]+', re.UNICODE)
         f = fdic[pattern.sub('', s).lower()] # for case and whitespace and symbol-insensitive searching
         if f['type'] == 'familiar':
-            embed = discord.Embed(title=f['name'], description=f['rarity']+"\n"+f['location'], color=0xeee657)
+            embed = discord.Embed(title=f['name'], description=f['rarity']+"\n"+f['location'], color=colordic[f['rarity']])
         else:
-            embed = discord.Embed(title=f['name'], description=f['rarity']+"\n"+f['recipe'], color=0xeee657)
+            embed = discord.Embed(title=f['name'], description=f['rarity']+"\n"+f['recipe'], color=colordic[f['rarity']])
             embed.add_field(name="Bonus", value=f['bonus'], inline=False)
         embed.set_image(url=f['image'])
         embed.add_field(name="Power", value=f['power'])
@@ -57,7 +60,7 @@ async def m(ctx, *args):
         pattern = re.compile('[\W_]+', re.UNICODE)
         m = mdic[pattern.sub('', s).lower()] # for case and whitespace and symbol-insensitive searching
         print(pattern.sub('', s).lower())
-        embed = discord.Embed(title=m['name'], description=m['type']+"\n"+m['location'], color=0xeee657)
+        embed = discord.Embed(title=m['name'], description=m['type']+"\n"+m['location'], color=0xff00ae)
         embed.set_image(url=m['image'])
 #        embed.add_field(name="Bonus", value=m['bonus'], inline=False)
         if 'power' in m:

@@ -133,7 +133,7 @@ def scrapemythic(result={}):
     dic['location'] = data[0].text
     pattern = re.compile('[\W_]+', re.UNICODE)
     result[pattern.sub('', dic['name']).lower()] = dic # for case and whitespace and symbol-insensitive searching
-    result['pewpew'] = dic # for case and whitespace and symbol-insensitive searching
+    result['pewpew'] = dic # nickname for laser
     i += 2
     while i < len(rows):
         dic = {}
