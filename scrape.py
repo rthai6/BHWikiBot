@@ -3,13 +3,7 @@ import csv
 import requests
 from bs4 import BeautifulSoup
 
-def scrapef():
-    result = {}
-    scrapefamiliars(result)
-    scrapefusions(result)
-    return result
-
-def scrapefamiliar(result):
+def scrapefamiliar(result={}):
     def firstrow(row, dic):
         dic['name'] = row['id'].replace('_', ' ').replace(".27", "'")
         data = row.findAll('td')
@@ -50,7 +44,7 @@ def scrapefamiliar(result):
             i += 3
     return result
 
-def scrapefusion(result):
+def scrapefusion(result={}):
     def firstrow(row, dic):
         dic['name'] = row['id'].replace('_', ' ').replace(".27", "'")
         data = row.findAll('td')
@@ -76,7 +70,6 @@ def scrapefusion(result):
         for index, skill in enumerate(data[3:]):
             dic['skills'][index]['values'] = skill.text
 
-    result = {}
     response = requests.get('http://bit-heroes.wikia.com/wiki/Fusion?action=render')
     html = response.content
     soup = BeautifulSoup(html, "html.parser")
@@ -93,7 +86,7 @@ def scrapefusion(result):
             i += 3
     return result
 
-def scrapemythic():
+def scrapemythic(result={}):
     def firstrow(row, dic):
         data = row.findAll('td')
         if data[0].find('span'):
@@ -113,7 +106,6 @@ def scrapemythic():
         data = row.findAll('td')
         dic['location'] = data[0].text
         
-    result = {}
     response = requests.get('https://bit-heroes.wikia.com/wiki/List_of_mythic_equipment')
     html = response.content
     soup = BeautifulSoup(html, "html.parser")

@@ -11,75 +11,61 @@ mythicdic = None
 
 @bot.event
 async def on_ready():
-    global familiardic
-    global fusiondic
-    global mythicdic
+    global fdic
+    global mdic
     
     print('Logged in as')
     print(bot.user.name)
     print(bot.user.id)
     print('------')
-    print('Scraping...')
-    familiardic = scrape.scrapefamiliar()
-    fusiondic = scrape.scrapefusion()
-    mythicdic = scrape.scrapemythic()
+    fdic = {}
+    print('Scraping familiars...')
+    fdic = scrape.scrapefamiliar(fdic)
+    print('Scraping fusions...')
+    fdic = scrape.scrapefusion(fdic)
+    print('Scraping mythics...')
+    mdic = scrape.scrapemythic()
     print('Ready')
     
 @bot.command()
-async def familiar(ctx, *args):
-    global familiardic
+async def f(ctx, *args):
+    global fdic
     try:
         s = "".join(args)
         pattern = re.compile('[\W_]+', re.UNICODE)
-        familiar = familiardic[pattern.sub('', s).lower()] # for case and whitespace and symbol-insensitive searching
-        embed = discord.Embed(title=familiar['name'], description=familiar['rarity']+"\n"+familiar['location'], color=0xeee657)
-        embed.set_image(url=familiar['image'])
-        embed.add_field(name="Power", value=familiar['power'])
-        embed.add_field(name="Stamina", value=familiar['stamina'])
-        embed.add_field(name="Agility", value=familiar['agility'])
-        for skill in familiar['skills']:
+        f = fdic[pattern.sub('', s).lower()] # for case and whitespace and symbol-insensitive searching
+        if f['type'] == 'familiar':
+            embed = discord.Embed(title=f['name'], description=f['rarity']+"\n"+f['location'], color=0xeee657)
+        else:
+            embed = discord.Embed(title=f['name'], description=f['rarity']+"\n"+f['recipe'], color=0xeee657)
+            embed.add_field(name="Bonus", value=f['bonus'], inline=False)
+        embed.set_image(url=f['image'])
+        embed.add_field(name="Power", value=f['power'])
+        embed.add_field(name="Stamina", value=f['stamina'])
+        embed.add_field(name="Agility", value=f['agility'])
+        for skill in f['skills']:
             embed.add_field(name=skill['name'], value=skill['target']+skill['values'])
         await ctx.send(embed=embed)
     except KeyError as error:
-        await ctx.send("Invalid familiar name.")
+        await ctx.send("Invalid familiar/fusion name.")
         
-
 @bot.command()
-async def fusion(ctx, *args):
-    global fusiondic
+async def m(ctx, *args):
+    global mdic
     try:
         s = "".join(args)
         pattern = re.compile('[\W_]+', re.UNICODE)
-        fusion = fusiondic[pattern.sub('', s).lower()] # for case and whitespace and symbol-insensitive searching
-        embed = discord.Embed(title=fusion['name'], description=fusion['rarity']+"\n"+fusion['recipe'], color=0xeee657)
-        embed.set_image(url=fusion['image'])
-        embed.add_field(name="Bonus", value=fusion['bonus'], inline=False)
-        embed.add_field(name="Power", value=fusion['power'])
-        embed.add_field(name="Stamina", value=fusion['stamina'])
-        embed.add_field(name="Agility", value=fusion['agility'])
-        for skill in fusion['skills']:
-            embed.add_field(name=skill['name'], value=skill['target']+skill['values'])
-        await ctx.send(embed=embed)
-    except KeyError as error:
-        await ctx.send("Invalid fusion name.")
-        
-@bot.command()
-async def mythic(ctx, *args):
-    global mythicdic
-    try:
-        s = "".join(args)
-        pattern = re.compile('[\W_]+', re.UNICODE)
-        mythic = mythicdic[pattern.sub('', s).lower()] # for case and whitespace and symbol-insensitive searching
+        m = mdic[pattern.sub('', s).lower()] # for case and whitespace and symbol-insensitive searching
         print(pattern.sub('', s).lower())
-        embed = discord.Embed(title=mythic['name'], description=mythic['type']+"\n"+mythic['location'], color=0xeee657)
-        embed.set_image(url=mythic['image'])
-#        embed.add_field(name="Bonus", value=mythic['bonus'], inline=False)
-        if 'power' in mythic:
-            embed.add_field(name="Power", value=mythic['power'])
-        if 'stamina' in mythic:
-            embed.add_field(name="Stamina", value=mythic['stamina'])
-        if 'agility' in mythic:
-            embed.add_field(name="Agility", value=mythic['agility'])
+        embed = discord.Embed(title=m['name'], description=m['type']+"\n"+m['location'], color=0xeee657)
+        embed.set_image(url=m['image'])
+#        embed.add_field(name="Bonus", value=m['bonus'], inline=False)
+        if 'power' in m:
+            embed.add_field(name="Power", value=m['power'])
+        if 'stamina' in m:
+            embed.add_field(name="Stamina", value=m['stamina'])
+        if 'agility' in m:
+            embed.add_field(name="Agility", value=m['agility'])
         await ctx.send(embed=embed)
     except KeyError as error:   
         await ctx.send("Invalid mythic name.")
@@ -101,8 +87,7 @@ bot.remove_command('help')
 @bot.command()
 async def help(ctx):
     embed = discord.Embed(title="BHWikiBot", description="List of commands are:", color=0xeee657)
-    embed.add_field(name="$fam", value="Gives info about familiar", inline=False)
-    embed.add_field(name="$fus", value="Gives info about fusion", inline=False)
+    embed.add_field(name="$f", value="Gives info about familiar/fusion", inline=False)
     embed.add_field(name="$info", value="Gives info about the bot", inline=False)
     embed.add_field(name="$help", value="Gives this message", inline=False)
     
