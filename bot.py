@@ -59,8 +59,8 @@ async def m(ctx, *args):
         s = "".join(args)
         pattern = re.compile('[\W_]+', re.UNICODE)
         m = mdic[pattern.sub('', s).lower()] # for case and whitespace and symbol-insensitive searching
-        print(pattern.sub('', s).lower())
         embed = discord.Embed(title=m['name'], description=m['type']+"\n"+m['location'], color=0xff00ae)
+        embed.add_field(name="Bonus", value=m['bonus'], inline=False)
         embed.set_image(url=m['image'])
 #        embed.add_field(name="Bonus", value=m['bonus'], inline=False)
         if 'power' in m:

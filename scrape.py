@@ -94,7 +94,6 @@ def scrapemythic(result={}):
         dic['name'] = data[1].find('b').text.replace('_', ' ').replace(".27", "'")
         dic['type'] = data[2].find('b').text
         dic['tier'] = data[3].find('b').text
-#        pattern = re.compile('[(].+[)]')
         if data[4].find('b'):
             dic['power'] = data[4].find('b').text
         if data[5].find('b'):
@@ -105,6 +104,8 @@ def scrapemythic(result={}):
     def secondrow(row, dic):
         data = row.findAll('td')
         dic['location'] = data[0].text
+        groups = data[1].text[7:].split('Note: ') # strip Bonus: and Note:
+        dic['bonus'] = groups[0].rstrip()
         
     response = requests.get('https://bit-heroes.wikia.com/wiki/List_of_mythic_equipment')
     html = response.content
@@ -112,7 +113,7 @@ def scrapemythic(result={}):
     tables = soup.findAll('table')
     rows = tables[2].findAll('tr')
     i = 1 # skip table name
-    # first item is special case...
+    # first item is special case for some reason...
     # image from src instead of data-src
     dic = {}
     row = rows[i]
@@ -131,6 +132,8 @@ def scrapemythic(result={}):
     row = rows[i+1]
     data = row.findAll('td')
     dic['location'] = data[0].text
+    groups = data[1].text[7:].split('Note: ') # strip Bonus: and Note:
+    dic['bonus'] = groups[0].rstrip()
     pattern = re.compile('[\W_]+', re.UNICODE)
     result[pattern.sub('', dic['name']).lower()] = dic # for case and whitespace and symbol-insensitive searching
     result['pewpew'] = dic # nickname for laser
