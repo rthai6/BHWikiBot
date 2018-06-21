@@ -3,11 +3,18 @@ import csv
 import requests
 from bs4 import BeautifulSoup
 
-def scrapefamiliar():
+def scrapef():
+    result = {}
+    scrapefamiliars(result)
+    scrapefusions(result)
+    return result
+
+def scrapefamiliar(result):
     def firstrow(row, dic):
         dic['name'] = row['id'].replace('_', ' ').replace(".27", "'")
         data = row.findAll('td')
         dic['rarity'] = data[0]['class'][0].capitalize()
+
         dic['image'] = data[0].find('span').find('img')['data-src']
         dic['power'] = data[3].find('b').text
         dic['skills'] = []
@@ -27,7 +34,6 @@ def scrapefamiliar():
         for index, skill in enumerate(data[3:]):
             dic['skills'][index]['values'] = skill.text
 
-    result = {}
     response = requests.get('http://bit-heroes.wikia.com/wiki/Familiar?action=render')
     html = response.content
     soup = BeautifulSoup(html, "html.parser")
@@ -35,7 +41,7 @@ def scrapefamiliar():
         rows = table.findAll('tr')
         i = 1 # skip table name
         while i < len(rows):
-            dic = {}
+            dic = {'type':'familiar'}
             firstrow(rows[i], dic)
             secondrow(rows[i+1], dic)
             thirdrow(rows[i+2], dic)
@@ -44,7 +50,7 @@ def scrapefamiliar():
             i += 3
     return result
 
-def scrapefusion():
+def scrapefusion(result):
     def firstrow(row, dic):
         dic['name'] = row['id'].replace('_', ' ').replace(".27", "'")
         data = row.findAll('td')
@@ -78,7 +84,7 @@ def scrapefusion():
         rows = table.findAll('tr')
         i = 1 # skip table name
         while i < len(rows):
-            dic = {}
+            dic = {'type':'fusion'}
             firstrow(rows[i], dic)
             secondrow(rows[i+1], dic)
             thirdrow(rows[i+2], dic)
